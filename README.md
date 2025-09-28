@@ -1,98 +1,112 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS S3 SDK Compatibility Tester
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This project is a **NestJS application** that exposes APIs wrapping the [AWS SDK](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/) and [MinIO SDK](https://min.io/).
+It is designed to help you verify whether your chosen S3-compatible storage provider (e.g., AWS S3, Cloudflare R2, Scaleway Object Storage, MinIO) works properly with these SDKs.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+* 🌐 NestJS standalone app that do absolutely nothing
+* 🔀 Simple **port and domain abstraction** for testing interactions.
+* ✅ Integration tests to check S3-compatibility of different providers.
+* 🧩 Works with AWS, Cloudflare R2, Scaleway, and MinIO (local or remote).
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Why?
 
-## Project setup
+Different providers implement the S3 protocol slightly differently. This app helps you **validate your provider's compatibility** with the official AWS SDK and the MinIO SDK.
+
+## Getting Started
+
+### Prerequisites
+
+* [Node.js](https://nodejs.org/) LTS
+* [pnpm](https://pnpm.io/) v8+
+* Docker (optional, for running MinIO locally or localstack)
+
+### Installation
 
 ```bash
-$ pnpm install
+# Clone repository
+# Install dependencies
+pnpm install
 ```
 
-## Compile and run the project
+### Usage
+
+In order to run all test (unit + integration)
+```bash
+pnpm run test test/integration/minio-sdk.spec.ts
+```
+
+
+In order to run all test (integration per sdk)
+```bash
+pnpm run test test/integration/minio-sdk.spec.ts
+```
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm run test test/integration/aws-sdk.spec.ts
 ```
 
-## Run tests
+### Configuration
 
-```bash
-# unit tests
-$ pnpm run test
+Create a `.env` file with your S3 provider credentials (see .env.example):
 
-# e2e tests
-$ pnpm run test:e2e
+```env
+#AWS
+#S3_ARN_ROLE=arn:aws:iam::XXXXXXXXXXXX:role/XXXXXXXXXXXX
+#OBJECT_STORAGE_REGION=us-east-1
+#OBJECT_STORAGE_ACCESS_KEY_ID=XXXXXXXXXXXX
+#OBJECT_STORAGE_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXXXXXX
+#OBJECT_STORAGE_PROVIDER=S3
+#OBJECT_STORAGE_ENDPOINT=https://s3.amazonaws.com
+#OBJECT_STORAGE_PATH_STYLE=false
 
-# test coverage
-$ pnpm run test:cov
+#Cloudflare R2
+#OBJECT_STORAGE_REGION=auto
+#OBJECT_STORAGE_ACCESS_KEY_ID=XXXXXXXXXXXX
+#OBJECT_STORAGE_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXXXXXX
+#OBJECT_STORAGE_PROVIDER=R2
+#OBJECT_STORAGE_ENDPOINT=https://XXXXXXXXXXXX.r2.cloudflarestorage.com
+#OBJECT_STORAGE_PATH_STYLE=true
+
+#Scaleway
+#OBJECT_STORAGE_REGION=fr-par
+#OBJECT_STORAGE_ACCESS_KEY_ID=XXXXXXXXXXXX
+#OBJECT_STORAGE_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXXXXXX
+#OBJECT_STORAGE_PROVIDER=SCALEWAY
+#OBJECT_STORAGE_ENDPOINT=https://s3.fr-par.scw.cloud
+#OBJECT_STORAGE_PATH_STYLE=true
 ```
 
-## Deployment
+> ⚠️ You can use credentials from **AWS S3, Cloudflare R2, Scaleway, or MinIO**.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+The integration tests will use your `.env` configuration to check whether your provider works with both AWS SDK and MinIO SDK.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Provider Compatibility
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
+| Provider          | AWS SDK | MinIO SDK | Notes                                                           |
+| ----------------- | ------- | --------- |-----------------------------------------------------------------|
+| **Amazon S3**     | ✅ Works | ✅ Works   | –                                                               |
+| **Cloudflare R2** | ✅ Works | ❌ Fails   | MinIO SDK not compatible within that repo, but supposed to work |
+| **Scaleway**      | ✅ Works | ✅ Works   | Slower responses with MinIO SDK                                 |
+| **Aliyun OSS**    | ✅ Works | ✅ Works   | Not yet tested inside this repo                                 |
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Compatibility ressources and SDKs:
 
-## Resources
+- https://developers.cloudflare.com/r2/api/s3/api/
+- https://www.alibabacloud.com/help/en/oss/developer-reference/compatibility-with-amazon-s3?spm=a2c63.p38356.0.i1
+- https://www.scaleway.com/en/docs/object-storage/api-cli/using-api-call-list/
 
-Check out a few resources that may come in handy when working with NestJS:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- https://github.com/minio/minio-js
+- https://github.com/aws/aws-sdk-js-v3
+- https://github.com/ali-sdk/ali-oss
 
-## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Improvements
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+* [ ] Better error handling
+* [ ] Usage of logger for operation info / debug
+* [ ] Add Docker Compose setup for easy local MinIO or localstack testing.
+* [ ] Provide CI/CD examples for automated compatibility checks.
+* [ ] Add OSS SDK (Aliyun) support.
